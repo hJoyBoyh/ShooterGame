@@ -1,5 +1,20 @@
 import pygame,sys,os
-from bullet import Bullet
+from bullet import *
+from enum import Enum
+
+class Player_event(Enum):
+    K_LEFT_DN =0
+    K_RIGHT_DN =1
+    K_RIGHT_LEFT_UP =2
+    K_SPACE_DN=3
+    K_SPACE_UP=4
+class Player_etat(Enum):
+        IDLE =0
+        RUN_D =1
+        RUN_G=2
+        NO_SHOOT=3
+        SHOOT=4
+
 class  Player(pygame.sprite.Sprite):
     def __init__(self,x,y,display):
         super().__init__()
@@ -9,6 +24,11 @@ class  Player(pygame.sprite.Sprite):
         
         self.posX = x
         self.posY = y
+
+        #ETAT
+        self.etat_X = Player_etat.IDLE
+        self.etat_shoot = Player_etat.NO_SHOOT
+
 
         #speed
         self.speed = 5
@@ -45,8 +65,7 @@ class  Player(pygame.sprite.Sprite):
          #bullet
         self.bullet = Bullet(0,self.posY,self.display)
 
-        # vie
-        self.vie = 3
+        
         
 
         
@@ -58,12 +77,12 @@ class  Player(pygame.sprite.Sprite):
         self.display.blit(img,(self.posX,self.posY))
     
     def movement(self):
-        keys = pygame.key.get_pressed()
+        
 
-        if keys[pygame.K_RIGHT]:
+        if self.etat_X == Player_etat.RUN_D:
             self.playerX_change += self.speed
             self.flip_img = True
-        if keys[pygame.K_LEFT]:
+        if self.etat_X == Player_etat.RUN_G:
             self.playerX_change -= self.speed
             self.flip_img = False
 
@@ -71,22 +90,20 @@ class  Player(pygame.sprite.Sprite):
         self.check_mur_invicible()
 
         
-
+        #flip au cas ou il retourne
         if self.flip_img == True:
             flipped_image = pygame.transform.flip(self.image,True,False)
           
             self.dessiner(flipped_image)
             
-
         if self.flip_img == False:
             flipped_image = pygame.transform.flip(self.image,False,False)
             self.dessiner(self.image)
 
     def tirer(self):
-        keys = pygame.key.get_pressed()
-
-        if keys[pygame.K_SPACE]:
-            if self.bullet.bullet_etat is 'ready':
+        if self.etat_shoot == Player_etat.SHOOT:
+            if self.bullet.etat is Bullet_etat.READY:
+                #garder position bullet
                 self.bullet.posX = self.posX
                 self.rect = self.bullet.image.get_rect(center = (self.bullet.posX,self.bullet.posY))
                 self.bullet.fire_bullet(self.bullet.posX,self.bullet.posY)
@@ -128,30 +145,50 @@ class  Player(pygame.sprite.Sprite):
             self.image_run.append(img)
 
         
-        
+    def fonctionnementPlayer(self):
+        keys = pygame.key.get_pressed()
 
-        pass
-   # def animate(self):
-    #    self.imageLoad = self.image_run[int(self.current_image)]
-     #   if self.animatePersonnage == True:
-           
-      #      self.current_image += 0.2
-
-       #     if self.current_image >= len(self.image_run):
-        #        self.current_image =0 
-
-        #self.imageLoad = self.image_run[int(self.current_image)]
+        if keys[pygame.K_SPACE]:
+            self.set_etat(Player_event.K_SPACE_DN)
+        elif not keys[pygame.K_SPACE]:
+            self.set_etat(Player_event.K_SPACE_UP)
         
         
-    def update(self):
-        
-        #self.dessiner()
 
-        self.movement()
+        if keys[pygame.K_RIGHT] and not keys[pygame.K_LEFT] :
+            self.set_etat(Player_event.K_RIGHT_DN)
+        elif keys[pygame.K_LEFT] and not keys[pygame.K_RIGHT] :
+            self.set_etat(Player_event.K_LEFT_DN)
+        else:
+            self.set_etat(Player_event.K_RIGHT_LEFT_UP)
+
        
+        
+        
+    
+      
+
+
+    def set_etat(self,event):
+        if self.etat_X == Player_etat.IDLE and event == Player_event.K_RIGHT_DN:
+            self.etat_X = Player_etat.RUN_D
+
+        if self.etat_X == Player_etat.IDLE and event == Player_event.K_LEFT_DN:
+            self.etat_X = Player_etat.RUN_G
+
+        if self.etat_X == Player_etat.RUN_G and event == Player_event.K_RIGHT_LEFT_UP\
+            or self.etat_X == Player_etat.RUN_D and event == Player_event.K_RIGHT_LEFT_UP:
+            self.etat_X = Player_etat.IDLE
+
+        if self.etat_shoot == Player_etat.NO_SHOOT and event == Player_event.K_SPACE_DN:
+            self.etat_shoot = Player_etat.SHOOT
+        if self.etat_shoot == Player_etat.SHOOT and event == Player_event.K_SPACE_UP:
+            self.etat_shoot = Player_etat.NO_SHOOT
+
+    def update(self):
+
+        self.fonctionnementPlayer()
+        
+        self.movement()
         self.bullet.update()
         self.tirer()
-      #  self.animate()
-
-
-

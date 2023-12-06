@@ -1,5 +1,12 @@
 import pygame
 from enemy import Enemy
+from enum import Enum
+
+
+    
+class Bullet_etat(Enum):
+    READY=1
+    FIRE=2
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self,x,y,display):
@@ -12,8 +19,6 @@ class Bullet(pygame.sprite.Sprite):
         self.x_change = 0
         self.y_change = 10
 
-        # etat
-        self.bullet_etat = "ready"
 
         # screen
         self.display = display
@@ -30,27 +35,35 @@ class Bullet(pygame.sprite.Sprite):
         #enemy list
         self.enemy = Enemy
 
+        # etat
+        self.etat = Bullet_etat.READY
+
     def fire_bullet(self,x,y):
         
-        self.bullet_etat = "fire"
+        
+        self.set_etat(Bullet_etat.FIRE)
         self.display.blit(self.image,(x+16,y+10))
         self.rect = self.image.get_rect(center = (x+16,y+10))
     
     def isCollision(self,rect_enemy):
+       
         if self.rect.colliderect(rect_enemy):
             self.posY=400
             self.posX = 1000
             self.rect = self.image.get_rect(center = (400,1000))
-            self.bullet_etat = "ready"
+            
+            self.set_etat(Bullet_etat.READY)
             return True
         return False
 
+    def set_etat(self,etat):
+        self.etat= etat
         
 
     def update(self):
         if self.posY<=0:
             self.posY=400
-            self.bullet_etat = "ready"
-        if self.bullet_etat == "fire":
+            self.set_etat(Bullet_etat.READY)
+        if self.etat == Bullet_etat.FIRE:
             self.fire_bullet(self.posX,self.posY)
             self.posY -= self.y_change

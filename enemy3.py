@@ -11,7 +11,7 @@ class Enemy3(pygame.sprite.Sprite):
         self.enemyY_change = 0.5
 
         #speed
-        self.speed = 5
+        self.speed = 3
 
         # screen
         self.display = display
@@ -40,12 +40,12 @@ class Enemy3(pygame.sprite.Sprite):
         self.posY += self.enemyY_change
         self.rect = self.image.get_rect(center = (self.posX,self.posY))
         if self.posX <= 0:
-            self.enemyX_change = 3
+            self.enemyX_change = self.speed
             self.posY += self.enemyY_change
             self.rect = self.image.get_rect(topleft = (self.posX,self.posY))
             
         elif self.posX >= 690:
-            self.enemyX_change = -3
+            self.enemyX_change = -self.speed
             self.posY += self.enemyY_change
             self.rect = self.image.get_rect(topleft = (self.posX,self.posY))
 

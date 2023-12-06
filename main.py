@@ -1,129 +1,84 @@
 import pygame,sys
-import random
-import time
+
 from player import Player
 from enemy import Enemy
 from enemy2 import Enemy2
 from enemy3 import Enemy3
+from level import Level
+
+from button import Button
 # Pygame setup
 pygame.init()
 screen = pygame.display.set_mode((720,480))
 display = pygame.Surface((720,480))
 clock = pygame.time.Clock()
 
+def get_font(size):
+    return pygame.font.Font("assets/font.ttf", size)
+
+# detection click bouton
+def click_dectection(rect, pos):
+    return True if rect.collidepoint(pos[0], pos[1]) else False
+
 player = Player(300,400,display)
+
 enemy = Enemy(300,100,display)
 enemy2 = Enemy2(400,100,display)
 enemy3 = Enemy3(500,80,display)
+list_enemy = []
 
-#timer
-counter, text = 3, '3'.rjust(3)
-pygame.time.set_timer(pygame.USEREVENT, 1000)
-font1 = pygame.font.SysFont('Consolas', 30)
-#------------------------------------------
+list_enemy.append(enemy)
+list_enemy.append(enemy2)
+list_enemy.append(enemy3)
 
+enemy4 = Enemy(300,100,display)
+enemy5 = Enemy2(400,100,display)
+enemy6 = Enemy3(500,80,display)
+list_enemy2 = []
+
+list_enemy2.append(enemy4)
+list_enemy2.append(enemy5)
+list_enemy2.append(enemy6)
 
 background = pygame.image.load('images/background/0.jpg')
 
-score_objectif = 3
-point = 0
-
-font = pygame.font.Font('freesansbold.ttf',32)
-def show_score(x,y):
-	global point
-	score = font.render("Score: "+ str(point),True,(255,255,255))
-	display.blit(score,(x,y))
-def show_score_objectif(x,y):
-	global score_objectif
-	score = font.render("Objectif: "+ str(score_objectif),True,(255,255,255))
-	display.blit(score,(x,y))
-
-over_font = pygame.font.Font('freesansbold.ttf',64)
-
-def game_over_text():
-    over_text = over_font.render("Win",True,(255,255,255))
-    display.blit(over_text,(300,240))
 
 
-def timer():
-	global counter,text
-	counter -= 1
-	text = str(counter).rjust(3) if counter > 0 else ''
+level2 = Level(screen,display,background,player,list_enemy2,3,"2",None)
+level = Level(screen,display,background,player,list_enemy,3,"1",level2)
 
+def main_menu():
+    
+    while True:
+       
+        screen.blit(background, (0, 0))
 
-while True:
-	
-	for event in pygame.event.get():
-		
-		if event.type == pygame.QUIT:
-			pygame.quit()
-			sys.exit()
-		if event.type == pygame.USEREVENT: 
-			timer()
-			
-	display.fill((0,0,0))
-	display.blit(background,(0,0))
+        MENU_MOUSE_POS = pygame.mouse.get_pos()
 
-	display.blit(font1.render(text, True, (0, 0, 0)), (32, 48))
+        MENU_TEXT = get_font(70).render("MAIN MENU", True, "#b68f40")
+        MENU_RECT = MENU_TEXT.get_rect(center=(350, 100))
 
-	pygame.draw.line(display, (255,0,0),(0,350),(720,350))
+        PLAY_BUTTON = Button(image=pygame.image.load("assets/Play Rect.png"), pos=(350, 250), 
+                            text_input="PLAY", font=get_font(50), base_color="#d7fcd4", hovering_color="White")
+        QUIT_BUTTON = Button(image=pygame.image.load("assets/Quit Rect.png"), pos=(350, 400), 
+                            text_input="QUIT", font=get_font(50), base_color="#d7fcd4", hovering_color="White")
 
-	if  counter > 0:
-		screen.blit(display,(0,0))
-		pygame.display.update()
-		clock.tick(60)
-		
-	if  counter < 0:
-		enemy.update()
-		enemy2.update()
-		enemy3.update()
-		player.update()
-		#pygame.draw.rect(display,(0,100,255),collider_area)
-		#timer()
-		#show_timer()
-		
+        screen.blit(MENU_TEXT, MENU_RECT)
 
-		if player.bullet.isCollision(enemy.rect):
-			enemy.posX = random.randint(0,680)
-			enemy.posY = random.randint(50,100)
-			point += 1
-			print(point)
-		if player.bullet.isCollision(enemy2.rect):
-			enemy2.posX = random.randint(0,680)
-			enemy2.posY = random.randint(50,100)
-			point += 1
-			print(point)
-		if player.bullet.isCollision(enemy3.rect):
-			enemy3.posX = random.randint(0,680)
-			enemy3.posY = random.randint(50,100)
-			point += 1
-			print(point)
-		#player.bullet.isCollision(enemy2.rect)
-		#player.bullet.isCollision(enemy3.rect)
-		show_score(10,10)
-		show_score_objectif(550,10)
-		
-		if enemy2.posY >= 300:
-			game_over_text()
-			enemy2.posY = 2000
-			enemy.posY = 2000
-			enemy3.posY = 2000
-			#player.vie -= 1
-		#show_vie()
-		if point == score_objectif:
-			game_over_text()
-			enemy2.posY = 2000
-			enemy.posY = 2000
-			enemy3.posY = 2000
-			
-		
-		
-
-		screen.blit(display,(0,0))
-		
-		
-		
-		
-
-		pygame.display.update()
-		clock.tick(60)
+        for button in [PLAY_BUTTON, QUIT_BUTTON]:
+            button.changeColor(MENU_MOUSE_POS)
+            button.update(screen)
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+                
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
+                   level.run()
+                if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    pygame.quit()
+                    
+        pygame.display.update()
+main_menu()

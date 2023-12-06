@@ -1,4 +1,15 @@
 import pygame
+from enum import Enum
+
+class Enemy_event(Enum):
+    RIGHT =0
+    LEFT =1
+  
+class Enemy_etat(Enum):
+        IDLE =0
+        RUN_D =1
+        RUN_G=2
+       
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self,x,y,display):
@@ -11,7 +22,7 @@ class Enemy(pygame.sprite.Sprite):
         self.enemyY_change = 40
 
         #speed
-        self.speed = 5
+        self.speed = 7
 
         # screen
         self.display = display
@@ -39,12 +50,12 @@ class Enemy(pygame.sprite.Sprite):
         self.posX += self.enemyX_change 
         self.rect = self.image.get_rect(center = (self.posX,self.posY))
         if self.posX <= 0:
-            self.enemyX_change = 7
+            self.enemyX_change = self.speed
             self.posY =  self.posY+self.enemyY_change
             self.rect = self.image.get_rect(topleft = (self.posX,self.posY))
             
         elif self.posX >= 690:
-            self.enemyX_change = -7
+            self.enemyX_change = -self.speed
             self.posY =  self.posY+self.enemyY_change
             self.rect = self.image.get_rect(topleft = (self.posX,self.posY))
 
@@ -56,3 +67,4 @@ class Enemy(pygame.sprite.Sprite):
 
     def update(self):
         self.movement()
+
