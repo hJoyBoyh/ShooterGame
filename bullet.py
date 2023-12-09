@@ -1,4 +1,5 @@
 import pygame
+from pygame import mixer
 from enemy import Enemy
 from enum import Enum
 
@@ -51,6 +52,9 @@ class Bullet(pygame.sprite.Sprite):
             self.posY=400
             self.posX = 1000
             self.rect = self.image.get_rect(center = (400,1000))
+
+            self.explosion_Sound = mixer.Sound('music/explosion.wav')
+            self.explosion_Sound.play()
             
             self.set_etat(Bullet_etat.READY)
             return True

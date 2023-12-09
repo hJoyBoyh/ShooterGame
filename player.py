@@ -31,7 +31,7 @@ class  Player(pygame.sprite.Sprite):
 
 
         #speed
-        self.speed = 5
+        self.speed = 8
 
         # screen
         self.display = display
@@ -52,11 +52,24 @@ class  Player(pygame.sprite.Sprite):
         self.imageLoad = pygame.transform.scale(self.imageLoad, self.image.get_size())
         self.imageLoad = self.imageLoad.convert()
 
+        #img height widtdh
+        self.imageH = self.image.get_height()
+        self.imageW = self.image.get_width()
+
         #put image load in image 
         self.image.blit(self.imageLoad,(0,0))
         self.image.set_colorkey((0,0,0))
+        
+        #avec animation ici
+        #for img in self.image_run:
+        #   img =pygame.transform.scale(img, self.image.get_size())
+        #    img.convert()
+        #self.image = self.image_run[self.current_image]
+        
 
         self.flip_img = False
+
+        self.moving_img = pygame.sprite.Group()
 
       
         #pygame rect
@@ -66,15 +79,26 @@ class  Player(pygame.sprite.Sprite):
         self.bullet = Bullet(0,self.posY,self.display)
 
         
-        
+    
 
-        
+    #def animate(self,speed):
+    #    self.current_image += speed
+    #    if int(self.current_image) >= len(self.image_run):
+    #        self.current_image = 0
+           
+
+    #   self.image = self.image_run[int(self.current_image)]
+          
     def box_collider_update(self):
         self.posX = self.playerX_change
         self.rect = self.image.get_rect(topleft = (self.posX,self.posY))
 
+        #pour monter avec animation enleve img de ce parametre
     def dessiner(self,img):
-        self.display.blit(img,(self.posX,self.posY))
+       self.display.blit(img,(self.posX,self.posY))
+        
+        #self.moving_img.draw(self.display)
+        
     
     def movement(self):
         
@@ -82,9 +106,15 @@ class  Player(pygame.sprite.Sprite):
         if self.etat_X == Player_etat.RUN_D:
             self.playerX_change += self.speed
             self.flip_img = True
+           # self.animate(0.25)
         if self.etat_X == Player_etat.RUN_G:
             self.playerX_change -= self.speed
             self.flip_img = False
+           # self.animate(0.25)
+        if self.etat_X == Player_etat.IDLE:
+            self.current_image = 0
+            #self.animate(0.25)
+            
 
         self.box_collider_update()
         self.check_mur_invicible()
@@ -92,13 +122,13 @@ class  Player(pygame.sprite.Sprite):
         
         #flip au cas ou il retourne
         if self.flip_img == True:
-            flipped_image = pygame.transform.flip(self.image,True,False)
+            flip_img= pygame.transform.flip(self.image,True,False)
           
-            self.dessiner(flipped_image)
+            self.dessiner(flip_img)
             
         if self.flip_img == False:
-            flipped_image = pygame.transform.flip(self.image,False,False)
-            self.dessiner(self.image)
+            flip_img=pygame.transform.flip(self.image,False,False)
+            self.dessiner(flip_img)
 
     def tirer(self):
         if self.etat_shoot == Player_etat.SHOOT:
@@ -107,6 +137,9 @@ class  Player(pygame.sprite.Sprite):
                 self.bullet.posX = self.posX
                 self.rect = self.bullet.image.get_rect(center = (self.bullet.posX,self.bullet.posY))
                 self.bullet.fire_bullet(self.bullet.posX,self.bullet.posY)
+
+                self.bullet_Sound = mixer.Sound('music/laser.wav')
+                self.bullet_Sound.play()
             
 
     def check_mur_invicible(self):
@@ -188,7 +221,9 @@ class  Player(pygame.sprite.Sprite):
     def update(self):
 
         self.fonctionnementPlayer()
-        
+        #self.moving_img.add(self)
         self.movement()
         self.bullet.update()
         self.tirer()
+        
+        

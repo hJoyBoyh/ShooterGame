@@ -3,6 +3,8 @@ import random
 from button import Button
 from enum import Enum
 from utils import *
+from pygame import mixer
+
 
 class Level_etat(Enum):
     PARTI_EN_COURS = 0
@@ -43,6 +45,9 @@ class Level():
         #mouse listener
         self.MENU_MOUSE_POS = pygame.mouse.get_pos()
 
+        #music compte pour le jouer une fois
+        self.musicCount = 1
+
    
     
     def show_score(self):
@@ -56,17 +61,34 @@ class Level():
     def show_score_objectif(self):
         
         score = self.font.render("Objectif: "+ str(self.objectif),True,(255,255,255))
-        self.display.blit(score,(550,10))
+        self.display.blit(score,(520,10))
     def show_niveau(self):
         niveau = self.font.render("Niveau: "+ self.niveau,True,(255,255,255))
         self.display.blit(niveau,(250,10))
 
     def game_over_text(self):
         over_text = self.font2.render("GameOver",True,(255,255,255))
-        self.display.blit(over_text,(300,240))
+        self.display.blit(over_text,(250,240))
+        #sound effect
+        self.game_over_sound()
+
     def win_text(self):
         over_text = self.font2.render("Win",True,(255,255,255))
         self.display.blit(over_text,(300,240))
+
+        #sound effect
+        self.win_sound()
+    def win_sound(self):
+        if self.musicCount ==1:
+            self.win_Sound = mixer.Sound('music/win.mp3')
+            self.win_Sound.play()
+            self.musicCount = 0
+    def game_over_sound(self):
+        if self.musicCount ==1:
+            self.game_over_Sound = mixer.Sound('music/lose.mp3')
+            self.game_over_Sound.play()
+            self.musicCount = 0
+
     def show_timer(self):
         self.display.blit(self.font1.render(self.text, True, (0, 0, 0)), (300, 240))
 
@@ -109,7 +131,7 @@ class Level():
 
 
                 self.show_timer()
-                pygame.draw.line(self.display, (255,0,0),(0,350),(720,350))
+                pygame.draw.line(self.display, (255,0,0),(0,400),(720,400))
 
                 #show decompte
                 if  self.counter > 0:
@@ -140,11 +162,19 @@ class Level():
                 
                     #if enemy depasse la base(ligne) c est game over et on mes tout les enemy en dehors du champ vision
                     for enemy in self.list_enemy:
-                        if enemy.posY >=300:
+                        if enemy.posY >=350:
                             if self.level_etat == False:
                                 self.game_over_text()
                                 for enemy in self.list_enemy:
                                     enemy.posY = 2000
+
+                                self.button = Button(image=pygame.image.load("assets/Play Rect.png"), pos=(350, 150), 
+                                text_input="QUIT", font=get_font(50), base_color="#d7fcd4", hovering_color="White")
+                                self.show_btn()
+                                if event.type == pygame.MOUSEBUTTONDOWN:
+                                    if self.button.checkForInput(self.MENU_MOUSE_POS):
+                                            pygame.quit()
+                                            sys.exit()
 
                     # if score atteigne objectif c est win on mes tout les enemy en dehors du champ vision
                     if self.score == self.objectif:
@@ -165,7 +195,7 @@ class Level():
 
                         if self.next_level == None:
                             self.button = Button(image=pygame.image.load("assets/Play Rect.png"), pos=(350, 150), 
-                            text_input="QUIT", font=get_font(50), base_color="#d7fcd4", hovering_color="White")
+                            text_input="FIN", font=get_font(50), base_color="#d7fcd4", hovering_color="White")
 
                             if event.type == pygame.MOUSEBUTTONDOWN:
                                 if self.button.checkForInput(self.MENU_MOUSE_POS):

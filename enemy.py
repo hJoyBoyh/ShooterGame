@@ -54,7 +54,7 @@ class Enemy(pygame.sprite.Sprite):
             self.posY =  self.posY+self.enemyY_change
             self.rect = self.image.get_rect(topleft = (self.posX,self.posY))
             
-        elif self.posX >= 690:
+        elif self.posX >= 680:
             self.enemyX_change = -self.speed
             self.posY =  self.posY+self.enemyY_change
             self.rect = self.image.get_rect(topleft = (self.posX,self.posY))
