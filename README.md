@@ -25,3 +25,8 @@ bibliothèque Pygame. De plus vous devez respecter les contraintes suivantes :
 * Faire une conception orientée objet (des classes pour l’arrière-plan, les personnages,
 les armes, les obstacles…);
 * Les acteurs (personnages, véhicules...) doivent être modélisé avec machine d’état;
+
+## Video Demonstration
+
+https://github.com/hJoyBoyh/ShooterGame/assets/105388762/c7a38504-4734-4085-a903-fa7c41c0e1c9
+
