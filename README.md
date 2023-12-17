@@ -1,5 +1,5 @@
 ## Shooter Game
---ENG--
+# --ENG--
 The Shooter Game is a school project for my video game class, and these are the instructions for it.
 
 * Create a video game incorporating movement and animations.
@@ -11,7 +11,7 @@ For the project implementation, you must use the Python programming language and
 * Integrate music;
 * Implement an object-oriented design (using classes for the background, characters, weapons, obstacles, etc.);
 * Model actors (characters, vehicles, etc.) using a state machine.
---FR--
+# --FR--
 Le jeu de tir (Shooter Game) est un projet scolaire pour mon cours de jeux vidéo, et voici les instructions correspondantes.
 
 * Réaliser un jeu vidéo intégrant du mouvement et des animations.
